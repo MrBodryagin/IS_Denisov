@@ -1,12 +1,13 @@
 from wm import WorkingMemory as wm
 from kb import KnowledgeBase as kb
+from explanation import Explanation
 
 class SolutionSearchSystem:
-    def __init__(self, working_memory: wm, knowledge_base: kb) -> None:
+    def __init__(self, working_memory: wm, knowledge_base: kb, explanation: Explanation) -> None:
         self.working_memory = working_memory
         self.knowledge_base = knowledge_base
         self.delete_rules = []
-        self.explanation = ''
+        self.explanation = explanation
         self.num_iteration = 1
 
     def listIn(self, list1: list, list2: list) -> bool:
@@ -25,9 +26,9 @@ class SolutionSearchSystem:
 
     
     def search_solution(self):
-        self.explanation += f'Итерация №{self.num_iteration}\n'
+        self.explanation.add(f'Итерация №{self.num_iteration}')
         self.num_iteration += 1
-        self.explanation += f'Рабочая память: {", ".join(self.working_memory.working_memory)}\n'
+        self.explanation.add(f'Рабочая память: {", ".join(self.working_memory.working_memory)}')
         max_count_conditions = 0
         conflict_indeces = []
         max_index = 0
@@ -42,12 +43,18 @@ class SolutionSearchSystem:
         self.delete_rules.append(max_index)
 
         if conflict_indeces == []: 
-            self.explanation += "Конфликтный набор: empty\n"
+            self.explanation.add("Конфликтный набор: empty")
         else: 
-            self.explanation += f"Конфликтный набор: {', '.join([str(ind) for ind in conflict_indeces])}\n"
-            self.explanation += f'Разрешение конфликта: {max_index + 1}\n\n'
+            self.explanation.add(f"Конфликтный набор: {', '.join([str(ind) for ind in conflict_indeces])}")
+            self.explanation.add(f'Разрешение конфликта: {max_index + 1}\n')
 
         return conflict_indeces == []
+
+
+    def execute_search(self):
+        while not self.search_solution():
+            pass
+        self.explanation.write_to_file('explanation.txt')
 
 
         
